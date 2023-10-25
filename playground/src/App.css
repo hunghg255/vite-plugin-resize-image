@@ -43,3 +43,10 @@
 img {
   max-width: 400px;
 }
+
+.img {
+  background: url('/images/a.jpeg') no-repeat;
+  width: 400px;
+  height: 400px;
+  background-size: contain;
+}
