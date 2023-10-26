@@ -21,6 +21,7 @@ const unpluginFactory = (options: PluginOptions = {}): any => {
     async load(id) {
       if (assignOptions.beforeBundle) {
         const imageModule = ctx.loadBundleHook(id);
+
         if (imageModule) {
           return imageModule;
         }

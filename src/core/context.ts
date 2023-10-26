@@ -97,7 +97,7 @@ export default class Context {
       root,
       'node_modules',
       options.cacheDir! ?? '.cache',
-      'unplugin-imagemin',
+      'vite-plugin-resize-image',
     );
     const isTurn = isTurnImageType(options.conversion);
     const outputPath = resolve(root, outDir);
@@ -438,7 +438,7 @@ export default class Context {
     spinner = await loadWithRocketGradient('');
     await fn.call(this);
     logger(pluginTitle('✨'), chalk.yellow('Successfully'));
-    spinner.text = chalk.yellow('Image conversion completed!');
+    // spinner.text = chalk.yellow('Image conversion completed!');
     spinner.succeed();
   }
 
@@ -480,6 +480,7 @@ export default class Context {
   async closeBundleFn() {
     const { isTurn, outputPath, publicDir } = this.config;
     const { mode, cache } = this.config.options;
+
     const defaultSquooshOptions = {};
     Object.keys(defaultOptions).forEach(
       (key) => (defaultSquooshOptions[key] = { ...this.mergeConfig[key] }),
@@ -487,7 +488,9 @@ export default class Context {
     if (cache) {
       this.cache = new Cache({ outputPath });
     }
+
     this.files.push(...readFilesRecursive(publicDir));
+
     const initOptions = {
       files: this.files,
       outputPath,
@@ -516,10 +519,11 @@ export default class Context {
           ),
         );
       }
+
       await initSharp(initOptions);
     } else {
       throw new Error(
-        '[unplugin-imagemin] Only squoosh or sharp can be selected for mode option',
+        '[vite-plugin-resize-image] Only squoosh or sharp can be selected for mode option',
       );
     }
   }

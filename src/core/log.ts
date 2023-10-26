@@ -24,10 +24,21 @@ export const bgMagenta = (res: string | number) =>
 export const bgCyan = (res: string | number) => colorResult(res, 'bgCyan');
 
 // eslint-disable-next-line max-params
-export function compressSuccess(filePath, newSize, oldSize, start) {
+export function compressSuccess(
+  filePath,
+  newSize,
+  oldSize,
+  start,
+  isCache = false,
+) {
   let path = filePath;
   if (path.charAt(0) === '/') {
     path = path.substring(1);
+  }
+
+  if (isCache) {
+    console.log(chalk.blue(path), chalk.green('✨ The file has been cached'));
+    return;
   }
   console.log(
     chalk.blue(path),
@@ -39,7 +50,7 @@ export function compressSuccess(filePath, newSize, oldSize, start) {
 }
 
 export function pluginTitle(emoji) {
-  return chalk.blue(`[unplugin-imagemin] ${emoji} ${emoji}`);
+  return chalk.blue(`[vite-plugin-resize-image] ${emoji} ${emoji}`);
 }
 
 export function logger(...args) {

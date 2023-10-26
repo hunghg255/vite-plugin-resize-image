@@ -52,14 +52,14 @@ async function initSquoosh(config) {
         transformPath = fileRootPath;
       }
 
-      if (options.cache && cache.get(chunks[filePath])) {
-        fs.writeFileSync(fileRootPath, cache.get(chunks[filePath]));
-        logger(
-          chalk.blue(filePath),
-          chalk.green('✨ The file has been cached'),
-        );
-        return Promise.resolve();
-      }
+      // if (options.cache && cache.get(chunks[filePath])) {
+      //   fs.writeFileSync(fileRootPath, cache.get(chunks[filePath]));
+      //   logger(
+      //     chalk.blue(filePath),
+      //     chalk.green('✨ The file has been cached'),
+      //   );
+      //   return Promise.resolve();
+      // }
 
       const image = imagePool.ingestImage(path.resolve(outputPath, filePath));
       const oldSize = fs.lstatSync(fileRootPath).size;

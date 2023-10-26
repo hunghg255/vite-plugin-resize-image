@@ -1,15 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import imagemin from '../src/vite';
+import ResizeImage from '../src/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    imagemin({
+    ResizeImage({
       // Default mode sharp. support squoosh and sharp
-      mode: 'squoosh',
-      // cache: true,
+      mode: 'sharp',
+      cache: true,
       // Default configuration options for compressing different pictures
       compress: {
         jpg: {

@@ -1,34 +1,26 @@
-import sharp from 'sharp';
-import path from 'node:path';
-import * as fs from 'node:fs';
 import { promises as proFs } from 'fs';
-import { encodeMap, sharpEncodeMap } from './encodeMap';
-import { compressSuccess, logger } from './log';
-import chalk from 'chalk';
+import * as fs from 'node:fs';
+import path from 'node:path';
 import { extname } from 'pathe';
+import sharp from 'sharp';
 import { sharpOptions } from './compressOptions';
+import { encodeMap, sharpEncodeMap } from './encodeMap';
+import { compressSuccess } from './log';
 import { filterDirPath, filterImageModule } from './utils';
+
 async function processImageFile(filePath: string, config: any) {
   const { outputPath, cache, chunks, options, isTurn, publicDir } = config;
   if (extname(filePath) === '.svg') return;
 
-  const fileRootPath = path.resolve(outputPath, filePath);
+  const start = performance.now();
 
+  const fileRootPath = path.resolve(outputPath, filePath);
   try {
     await proFs.access(fileRootPath, fs.constants.F_OK);
   } catch (error) {
     return;
   }
 
-  if (options.cache && cache.get(chunks[filePath])) {
-    await proFs.writeFile(fileRootPath, cache.get(chunks[filePath]));
-    logger(chalk.blue(filePath), chalk.green('✨ The file has been cached'));
-    return;
-  }
-
-  const start = performance.now();
-  const oldSize = (await proFs.stat(fileRootPath)).size;
-  let newSize = oldSize;
   const ext = path.extname(fileRootPath).slice(1) ?? '';
   const res = options.conversion.find((item) => `${item.from}`.includes(ext));
   const itemConversion = isTurn && res?.from === ext;
@@ -38,10 +30,48 @@ async function processImageFile(filePath: string, config: any) {
     ext,
     itemConversion ? current : ext,
   )}`;
+
+  const relativePathRace = path.relative(publicDir, filepath);
+  const finalPath = path.join(outputPath, relativePathRace);
+  const deletePath = path.join(outputPath, path.relative(publicDir, filePath));
+  const f1 = path.join(outputPath, filePath.replace(publicDir, ''));
+
+  if (options.cache && chunks[filePath] && cache.get(chunks[filePath])) {
+    await proFs.writeFile(finalPath, cache.get(chunks[filePath]));
+
+    if (itemConversion && !filterDirPath(filepath, publicDir)) {
+      await proFs.unlink(fileRootPath);
+    }
+    if (filterDirPath(filepath, publicDir)) {
+      await proFs.unlink(deletePath);
+    }
+    compressSuccess(finalPath.replace(process.cwd(), ''), 0, 0, 0, true);
+    return;
+  } else if (
+    options.cache &&
+    filterDirPath(filepath, publicDir) &&
+    cache.getPublish(finalPath, f1)
+  ) {
+    await proFs.writeFile(finalPath, cache.getPublish(finalPath, f1));
+
+    if (itemConversion && !filterDirPath(filepath, publicDir)) {
+      await proFs.unlink(fileRootPath);
+    }
+    if (filterDirPath(filepath, publicDir)) {
+      await proFs.unlink(deletePath);
+    }
+    compressSuccess(finalPath.replace(process.cwd(), ''), 0, 0, 0, true);
+    return;
+  }
+
+  const oldSize = (await proFs.stat(fileRootPath)).size;
+  let newSize = oldSize;
+
   const currentType = options.conversion.find(
     (item) => item.from === extname(fileRootPath).slice(1),
   );
   let resultBuffer;
+  let data;
 
   if (currentType !== undefined) {
     const option = {
@@ -54,16 +84,12 @@ async function processImageFile(filePath: string, config: any) {
       .toBuffer();
   } else {
     const option = { ...sharpOptions[ext], ...options.compress[ext] };
+
     resultBuffer = await sharp(fileRootPath)
       [sharpEncodeMap.get(ext)!](option)
       .toBuffer();
   }
 
-  const relativePathRace = path.relative(publicDir, filepath);
-  const finalPath = path.join(outputPath, relativePathRace);
-  const deletePath = path.join(outputPath, path.relative(publicDir, filePath));
-
-  let data;
   if (filterDirPath(filepath, publicDir)) {
     await proFs.writeFile(finalPath, resultBuffer);
     data = await proFs.stat(finalPath);
@@ -75,13 +101,22 @@ async function processImageFile(filePath: string, config: any) {
   newSize = data.size;
 
   if (newSize < oldSize) {
-    if (options.cache && !cache.get(chunks[filePath])) {
-      cache.set(chunks[filePath], await proFs.readFile(filepath));
+    if (options.cache && filterDirPath(filepath, publicDir)) {
+      cache.setPublish(finalPath, f1, await proFs.readFile(f1));
+    } else if (
+      options.cache &&
+      chunks[filePath] &&
+      !cache.get(chunks[filePath])
+    ) {
+      try {
+        cache.set(chunks[filePath], await proFs.readFile(filepath));
+      } catch (error) {
+        console.log('ERROR Read file cache', error);
+      }
     }
     if (itemConversion && !filterDirPath(filepath, publicDir)) {
       await proFs.unlink(fileRootPath);
     }
-
     if (filterDirPath(filepath, publicDir)) {
       await proFs.unlink(deletePath);
     }

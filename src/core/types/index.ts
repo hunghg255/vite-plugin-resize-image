@@ -33,7 +33,7 @@ export interface PluginOptions {
   cache?: boolean;
   /**
    * @description Cache folder directory read
-   * @default node_modules/unplugin-imagemin/cache
+   * @default node_modules/vite-plugin-resize-image/cache
    *
    */
   cacheDir?: string;

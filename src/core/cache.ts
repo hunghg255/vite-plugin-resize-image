@@ -11,9 +11,9 @@ const cacheDirectory = path.join(
   root,
   'node_modules',
   '.cache',
-  'unplugin-imagemin',
+  'vite-plugin-resize-image',
 );
-const cacheIdentifier = `unplugin-imagemin:${pkg.version} ${env}`;
+const cacheIdentifier = `vite-plugin-resize-image:${pkg.version} ${env}`;
 const manifestKey = path.join(cacheDirectory, 'manifest.json');
 
 export default class Cache {
@@ -31,9 +31,12 @@ export default class Cache {
     if (!this.hasManifest(cacheKey)) {
       return null;
     }
-    const originStats = fs.statSync(path.join(root, chunk.name));
+    if (!cacheKey) return;
+
+    const originStats = fs.statSync(path.join(this.outputPath, chunk.fileName));
     const cacheStats = this.getManifest(cacheKey);
-    if (originStats.ctimeMs === cacheStats.ctimeMs) {
+
+    if (originStats.size === cacheStats.size) {
       return fs.readFileSync(cacheKey);
     }
     return null;
@@ -41,6 +44,9 @@ export default class Cache {
 
   set(chunk, data) {
     const cacheKey = getCacheKey(chunk);
+
+    if (!cacheKey) return;
+
     if (!existsSync(cacheDirectory)) {
       mkdirSync(cacheDirectory);
     }
@@ -48,7 +54,50 @@ export default class Cache {
       cacheKey,
       data || fs.readFileSync(path.join(this.outputPath, chunk.fileName)),
     );
-    this.setManifest(cacheKey, fs.statSync(path.join(root, chunk.name)));
+
+    try {
+      this.setManifest(
+        cacheKey,
+        fs.statSync(path.join(this.outputPath, chunk.fileName)),
+      );
+    } catch (error) {
+      console.log('ERROR: setManifest', error);
+    }
+  }
+
+  setPublish(finalPath, filePath, data) {
+    const cacheKey = getCacheKey(finalPath);
+
+    if (!cacheKey) return;
+
+    if (!existsSync(cacheDirectory)) {
+      mkdirSync(cacheDirectory);
+    }
+    fs.writeFileSync(cacheKey, data);
+
+    try {
+      this.setManifest(cacheKey, fs.statSync(filePath));
+    } catch (error) {
+      console.log('ERROR: setManifest', error);
+    }
+  }
+
+  getPublish(finalPath, filePath) {
+    const cacheKey = getCacheKey(finalPath);
+
+    if (!this.hasManifest(cacheKey)) {
+      return null;
+    }
+
+    if (!cacheKey) return;
+
+    const originStats = fs.statSync(filePath);
+    const cacheStats = this.getManifest(cacheKey);
+
+    if (originStats.size === cacheStats.size) {
+      return fs.readFileSync(cacheKey);
+    }
+    return null;
   }
 
   getManifest(key: string) {
@@ -73,7 +122,12 @@ function getCacheManifest(): object {
 }
 
 function getCacheKey(chunk): string {
-  const hash = digest(`${cacheIdentifier}\n${chunk.name}`);
+  if (typeof chunk === 'object') {
+    const hash = digest(`${cacheIdentifier}\n${chunk.name}`);
+    return path.join(cacheDirectory, `${hash}`);
+  }
+
+  const hash = digest(`${cacheIdentifier}\n${chunk}`);
   return path.join(cacheDirectory, `${hash}`);
 }
 
