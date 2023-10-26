@@ -127,7 +127,7 @@ export interface PluginOptions {
   cache?: boolean;
   /**
    * @description Cache folder directory read
-   * @default node_modules/vite-plugin-resize-image/cache
+   * @default node_modules/.cache/vite-plugin-resize-image
    *
    */
   cacheDir?: string;
