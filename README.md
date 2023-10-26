@@ -55,11 +55,11 @@ npm i vite-plugin-resize-image@latest -D
 
 ```ts
 import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import react from '@vitejs/plugin-react';
 import ResizeImage from 'vite-plugin-resize-image/vite';
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), ResizeImage()],
+  plugins: [react(), ResizeImage()],
 });
 ```
 
@@ -70,13 +70,13 @@ export default defineConfig({
 
 ```ts
 iimport { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import react from '@vitejs/plugin-react';
 import ResizeImage from 'vite-plugin-resize-image/vite';
 import path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    react(),
     ResizeImage({
       // Default mode sharp. support squoosh and sharp
       mode: 'squoosh',
