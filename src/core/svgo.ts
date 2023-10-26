@@ -4,9 +4,10 @@ import { compressSuccess } from './log';
 import { optimize } from 'svgo';
 import { performance } from 'perf_hooks';
 import { extname } from 'path';
+import { getShortPath } from './utils';
 
-export default async function initSvgo(config, filePath) {
-  const { outputPath, cache, chunks, options, publicDir } = config;
+async function initSvgoF(config, filePath) {
+  const { outputPath, cache, chunks, options, publicDir, longest } = config;
   const fileRootPath = path.resolve(outputPath, filePath);
 
   if (extname(filePath) !== '.svg') return;
@@ -23,7 +24,13 @@ export default async function initSvgo(config, filePath) {
   if (options.cache && chunks[filePath] && cache.get(chunks[filePath])) {
     await fs.writeFile(finalPath, cache.get(chunks[filePath]));
 
-    compressSuccess(finalPath.replace(process.cwd(), ''), 0, 0, 0, true);
+    compressSuccess(
+      finalPath.replace(process.cwd().padEnd(longest + 2), ''),
+      0,
+      0,
+      0,
+      true,
+    );
     return;
   }
 
@@ -34,7 +41,13 @@ export default async function initSvgo(config, filePath) {
   ) {
     await fs.writeFile(finalPath, cache.getPublish(finalPath, filePath));
 
-    compressSuccess(finalPath.replace(process.cwd(), ''), 0, 0, 0, true);
+    compressSuccess(
+      finalPath.replace(process.cwd(), '').padEnd(longest + 2),
+      0,
+      0,
+      0,
+      true,
+    );
     return;
   }
 
@@ -54,7 +67,7 @@ export default async function initSvgo(config, filePath) {
   const svgBinaryData = Buffer.from(result.data, 'utf-8');
 
   if (filePath.startsWith(publicDir)) {
-    cache.setPublish(finalPath, finalPath, svgBinaryData);
+    if (options.cache) cache.setPublish(finalPath, finalPath, svgBinaryData);
 
     await fs.writeFile(finalPath, svgBinaryData);
   } else {
@@ -68,6 +81,15 @@ export default async function initSvgo(config, filePath) {
 
     await fs.writeFile(fileRootPath, svgBinaryData);
   }
+  const shortPath = getShortPath(filePath, config);
 
-  compressSuccess(relativePath, newSize, oldSize, start);
+  compressSuccess(shortPath.padEnd(longest + 2), newSize, oldSize, start);
+}
+
+export default async function initSvgo(config) {
+  const files = config.files.filter((filePath) => extname(filePath) === '.svg');
+
+  files.forEach(async (item: string) => {
+    await initSvgoF({ ...config }, item);
+  });
 }

@@ -3,6 +3,9 @@ import { createHash } from 'node:crypto';
 import fs, { constants, promises as fsPromise } from 'fs';
 import path, { basename, extname } from 'pathe';
 
+import pathN from 'node:path';
+import { encodeMap, sharpEncodeMap } from './encodeMap';
+
 export const size = partial({ base: 2, standard: 'jedec' });
 const extRE = /(png|jpeg|jpg|webp|wb2|avif)$/i;
 const extSvgRE = /\.(png|jpeg|jpg|webp|wb2|avif)$/i;
@@ -203,3 +206,28 @@ export async function readImageFiles(dir) {
 
   return images;
 }
+
+export const getShortPath = (filePath: string, config: any) => {
+  try {
+    const { outputPath, options, isTurn, publicDir } = config;
+
+    const fileRootPath = pathN.resolve(outputPath, filePath);
+
+    const ext = pathN.extname(fileRootPath).slice(1) ?? '';
+    const res = options.conversion.find((item) => `${item.from}`.includes(ext));
+    const itemConversion = isTurn && res?.from === ext;
+    const type = itemConversion ? res?.to : sharpEncodeMap.get(ext);
+    const current: any = encodeMap.get(type);
+    const filepath = `${fileRootPath.replace(
+      ext,
+      itemConversion ? current : ext,
+    )}`;
+
+    const relativePathRace = path.relative(publicDir, filepath);
+    const finalPath = path.join(outputPath, relativePathRace);
+
+    return finalPath.replace(process.cwd(), '');
+  } catch (error) {
+    return '';
+  }
+};

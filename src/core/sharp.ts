@@ -9,7 +9,8 @@ import { compressSuccess } from './log';
 import { filterDirPath, filterImageModule } from './utils';
 
 async function processImageFile(filePath: string, config: any) {
-  const { outputPath, cache, chunks, options, isTurn, publicDir } = config;
+  const { outputPath, cache, chunks, options, isTurn, publicDir, longest } =
+    config;
   if (extname(filePath) === '.svg') return;
 
   const start = performance.now();
@@ -36,6 +37,8 @@ async function processImageFile(filePath: string, config: any) {
   const deletePath = path.join(outputPath, path.relative(publicDir, filePath));
   const f1 = path.join(outputPath, filePath.replace(publicDir, ''));
 
+  const shortPath = finalPath.replace(process.cwd(), '');
+
   if (options.cache && chunks[filePath] && cache.get(chunks[filePath])) {
     await proFs.writeFile(finalPath, cache.get(chunks[filePath]));
 
@@ -45,7 +48,7 @@ async function processImageFile(filePath: string, config: any) {
     if (filterDirPath(filepath, publicDir)) {
       await proFs.unlink(deletePath);
     }
-    compressSuccess(finalPath.replace(process.cwd(), ''), 0, 0, 0, true);
+    compressSuccess(`${shortPath.padEnd(longest + 2)}`, 0, 0, 0, true);
     return;
   } else if (
     options.cache &&
@@ -60,7 +63,7 @@ async function processImageFile(filePath: string, config: any) {
     if (filterDirPath(filepath, publicDir)) {
       await proFs.unlink(deletePath);
     }
-    compressSuccess(finalPath.replace(process.cwd(), ''), 0, 0, 0, true);
+    compressSuccess(`${shortPath.padEnd(longest + 2)}`, 0, 0, 0, true);
     return;
   }
 
@@ -121,7 +124,7 @@ async function processImageFile(filePath: string, config: any) {
       await proFs.unlink(deletePath);
     }
     compressSuccess(
-      finalPath.replace(process.cwd(), ''),
+      `${shortPath.padEnd(longest + 2)}`,
       newSize,
       oldSize,
       start,
@@ -130,7 +133,9 @@ async function processImageFile(filePath: string, config: any) {
 }
 
 async function initSharp(config) {
-  const images = config.files
+  const files = config.files.filter(filterImageModule);
+
+  const images = files
     .filter(filterImageModule)
     .map((filePath: string) => processImageFile(filePath, config));
   await Promise.all(images);

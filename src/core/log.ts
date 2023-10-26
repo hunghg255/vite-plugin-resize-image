@@ -37,20 +37,25 @@ export function compressSuccess(
   }
 
   if (isCache) {
-    console.log(chalk.blue(path), chalk.green('✨ The file has been cached'));
+    console.log(
+      chalk.green('✓'),
+      chalk.blue(path),
+      chalk.green('✨ Cache Hit'),
+    );
     return;
   }
   console.log(
+    chalk.green('✓'),
     chalk.blue(path),
-    chalk.yellow(size(oldSize).toString()),
+    chalk.yellow(size(oldSize).toString().padEnd(10)),
     '➡️ ',
-    chalk.green(size(newSize).toString()),
+    chalk.green(size(newSize).toString().padEnd(10)),
     chalk.magenta(`+${Math.ceil(performance.now() - start)}ms`),
   );
 }
 
 export function pluginTitle(emoji) {
-  return chalk.blue(`[vite-plugin-resize-image] ${emoji} ${emoji}`);
+  return chalk.blue(`[vite-plugin-resize-image] ${emoji}`);
 }
 
 export function logger(...args) {

@@ -9,6 +9,7 @@ import {
   filterExtension,
   filterFile,
   generateImageID,
+  getShortPath,
   hasImageFiles,
   isTurnImageType,
   parseId,
@@ -26,10 +27,11 @@ import devalue from './devalue';
 import chalk from 'chalk';
 import { compressSuccess, logger, pluginTitle } from './log';
 import { loadWithRocketGradient } from './gradient';
-import Cache from './cache';
+import Cache, { cacheDirectory } from './cache';
 import initSquoosh from './squoosh';
 import initSharp from './sharp';
 import initSvg from './svgo';
+import { existsSync } from 'node:fs';
 export const cssUrlRE =
   /(?<=^|[^\w\-\u0080-\uffff])url\((\s*('[^']+'|"[^"]+")\s*|[^'")]+)\)/;
 
@@ -434,12 +436,13 @@ export default class Context {
     if (!this.files.length && !hasImageFiles(this.config.publicDir)) {
       return false;
     }
-    let spinner;
-    spinner = await loadWithRocketGradient('');
+    // let spinner;
+    // spinner = await loadWithRocketGradient('');
     await fn.call(this);
     logger(pluginTitle('✨'), chalk.yellow('Successfully'));
+    console.log();
     // spinner.text = chalk.yellow('Image conversion completed!');
-    spinner.succeed();
+    // spinner.succeed();
   }
 
   async generateSvgBundle(item) {
@@ -485,8 +488,13 @@ export default class Context {
     Object.keys(defaultOptions).forEach(
       (key) => (defaultSquooshOptions[key] = { ...this.mergeConfig[key] }),
     );
+
     if (cache) {
       this.cache = new Cache({ outputPath });
+    } else {
+      if (existsSync(cacheDirectory)) {
+        fs.rm(cacheDirectory, { recursive: true });
+      }
     }
 
     this.files.push(...readFilesRecursive(publicDir));
@@ -502,11 +510,17 @@ export default class Context {
       publicDir,
     };
 
-    this.files.forEach(async (item: string) => {
-      if (extname(item) === '.svg') {
-        await initSvg({ ...initOptions }, item);
+    let longest = 0;
+
+    for (const filePath of this.files) {
+      const shortPath = getShortPath(filePath, initOptions);
+
+      if (shortPath.length > longest) {
+        longest = shortPath.length;
       }
-    });
+    }
+
+    await initSvg({ ...initOptions, longest });
 
     if (mode === 'squoosh' && SquooshUseFlag) {
       await initSquoosh({ ...initOptions, defaultSquooshOptions });
@@ -520,7 +534,7 @@ export default class Context {
         );
       }
 
-      await initSharp(initOptions);
+      await initSharp({ ...initOptions, longest });
     } else {
       throw new Error(
         '[vite-plugin-resize-image] Only squoosh or sharp can be selected for mode option',

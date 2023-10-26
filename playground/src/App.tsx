@@ -2,7 +2,7 @@
 
 import a from './assets/a.jpeg';
 // import a1 from './assets/folder1/a1.jpeg';
-// import a2 from './assets/folder1/folder2/a2.jpeg';
+import a2 from './assets/ic-solar_gallery-add-bold.svg';
 // import b from './assets/images/b.png';
 
 function App() {
@@ -14,8 +14,8 @@ function App() {
       <img src="/images/a.jpeg" alt="a" />
 
       <img src={a} alt="" />
-      {/* <img src={a1} alt="" />
-      <img src={a2} alt="" /> */}
+      {/* {/* <img src={a1} alt="" /> */}
+      <img src={a2} alt="" />
       {/*<img src={b} alt="" />
 
       <div

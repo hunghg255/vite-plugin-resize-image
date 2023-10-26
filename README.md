@@ -5,11 +5,12 @@
 ### ✨✨ Continuous iterative development in testing
 
 ```bash
-✨ : vite-plugin-resize-image
-✔ : Process start with mode squoosh
-✅ : [test1.png] [12.39 MB] -> [102.54 KB]
-✔ : Process start with mode squoosh
-✅ : [test2.png] [16.38 MB] -> [76.79 KB]
+[vite-plugin-resize-image] 📦 Process start with Mode sharp
+✓ dist/images/ic-solar_gallery-add-bold.svg            2.9 KB     ➡️  1.29 KB    +58ms
+✓ dist/assets/ic-solar_gallery-add-bold-0d3eb8b2.svg   2.9 KB     ➡️  1.29 KB    +59ms
+✓ dist/images/a.webp                                   799.21 KB  ➡️  74.36 KB   +1012ms
+✓ dist/assets/a-aa18c0a3.webp                          3.5 MB     ➡️  149.98 KB  +3176ms
+[vite-plugin-resize-image] ✨ Successfully
 ```
 
 #### 🌈 Features

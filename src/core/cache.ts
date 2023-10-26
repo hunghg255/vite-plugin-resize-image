@@ -7,7 +7,7 @@ import pkg from '../../package.json';
 const env = process.env.NODE_ENV || 'development';
 
 const root = process.cwd();
-const cacheDirectory = path.join(
+export const cacheDirectory = path.join(
   root,
   'node_modules',
   '.cache',
