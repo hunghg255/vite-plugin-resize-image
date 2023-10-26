@@ -37,7 +37,7 @@ Supports two compression modes
 
 Although squoosh has done a good job, there will be all kinds of problems in future node versions, so don't use squoosh mode for the time being.
 
-Due to the loading problem of `squoosh`, unplugin-imagmin currently only supports versions below node 18.
+Due to the loading problem of `squoosh`, vite-plugin-resize-image currently only supports versions below node 18.
 
 Due to the rapid update of vite version and squoosh stop maintenance and other unstable factors
 
@@ -128,7 +128,7 @@ export interface PluginOptions {
   cache?: boolean;
   /**
    * @description Cache folder directory read
-   * @default node_modules/vite-plugin-resize-image/cache
+   * @default node_modules/.cache/vite-plugin-resize-image
    *
    */
   cacheDir?: string;
