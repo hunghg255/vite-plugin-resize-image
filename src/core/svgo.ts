@@ -61,8 +61,6 @@ async function initSvgoF(config, filePath) {
   });
 
   let newSize = Buffer.byteLength(result.data);
-  const unixPath = path.normalize(fileRootPath);
-  const relativePath = path.relative(process.cwd(), unixPath);
 
   const svgBinaryData = Buffer.from(result.data, 'utf-8');
 

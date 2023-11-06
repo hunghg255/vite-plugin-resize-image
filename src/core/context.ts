@@ -506,7 +506,7 @@ export default class Context {
       options: this.config.options,
       isTurn,
       cache: this.cache,
-      chunks: this.chunks,
+      chunks: this.chunks ?? [],
       publicDir,
     };
 
