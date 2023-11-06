@@ -1,4 +1,4 @@
-import { promises as proFs } from 'fs';
+import { existsSync, promises as proFs } from 'fs';
 import * as fs from 'node:fs';
 import path from 'node:path';
 import { extname } from 'pathe';
@@ -42,10 +42,14 @@ async function processImageFile(filePath: string, config: any) {
   if (options.cache && chunks[filePath] && cache.get(chunks[filePath])) {
     await proFs.writeFile(finalPath, cache.get(chunks[filePath]));
 
-    if (itemConversion && !filterDirPath(filepath, publicDir)) {
+    if (
+      itemConversion &&
+      !filterDirPath(filepath, publicDir) &&
+      existsSync(fileRootPath)
+    ) {
       await proFs.unlink(fileRootPath);
     }
-    if (filterDirPath(filepath, publicDir)) {
+    if (filterDirPath(filepath, publicDir) && existsSync(deletePath)) {
       await proFs.unlink(deletePath);
     }
     compressSuccess(`${shortPath.padEnd(longest + 2)}`, 0, 0, 0, true);
@@ -57,10 +61,14 @@ async function processImageFile(filePath: string, config: any) {
   ) {
     await proFs.writeFile(finalPath, cache.getPublish(finalPath, f1));
 
-    if (itemConversion && !filterDirPath(filepath, publicDir)) {
+    if (
+      itemConversion &&
+      !filterDirPath(filepath, publicDir) &&
+      existsSync(fileRootPath)
+    ) {
       await proFs.unlink(fileRootPath);
     }
-    if (filterDirPath(filepath, publicDir)) {
+    if (filterDirPath(filepath, publicDir) && existsSync(deletePath)) {
       await proFs.unlink(deletePath);
     }
     compressSuccess(`${shortPath.padEnd(longest + 2)}`, 0, 0, 0, true);
@@ -117,10 +125,14 @@ async function processImageFile(filePath: string, config: any) {
         console.log('ERROR Read file cache', error);
       }
     }
-    if (itemConversion && !filterDirPath(filepath, publicDir)) {
+    if (
+      itemConversion &&
+      !filterDirPath(filepath, publicDir) &&
+      existsSync(fileRootPath)
+    ) {
       await proFs.unlink(fileRootPath);
     }
-    if (filterDirPath(filepath, publicDir)) {
+    if (filterDirPath(filepath, publicDir) && existsSync(deletePath)) {
       await proFs.unlink(deletePath);
     }
     compressSuccess(

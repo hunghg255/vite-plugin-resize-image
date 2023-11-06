@@ -9,7 +9,7 @@ export default defineConfig({
     ResizeImage({
       // Default mode sharp. support squoosh and sharp
       mode: 'sharp',
-      cache: false,
+      cache: true,
       // Default configuration options for compressing different pictures
       compress: {
         jpg: {
