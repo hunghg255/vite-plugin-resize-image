@@ -404,9 +404,17 @@ export default class Context {
   // close bundle
   async closeBundleHook() {
     if (!this.config.options.beforeBundle) {
+      const start = performance.now();
+
       this.startGenerateLogger();
-      await this.spinnerHooks(this.closeBundleFn);
-      this.transformHtmlModule();
+      await this.closeBundleFn();
+      await this.transformHtmlModule();
+
+      logger(
+        pluginTitle('✨'),
+        chalk.yellow('Compression time: '),
+        chalk.green(`${(performance.now() - start).toFixed(2)}ms`),
+      );
     }
     return true;
   }
@@ -430,19 +438,6 @@ export default class Context {
 
   async isCache(cacheFilePath) {
     return this.config.options.cache && exists(cacheFilePath);
-  }
-
-  async spinnerHooks(fn) {
-    if (!this.files.length && !hasImageFiles(this.config.publicDir)) {
-      return false;
-    }
-    // let spinner;
-    // spinner = await loadWithRocketGradient('');
-    await fn.call(this);
-    logger(pluginTitle('✨'), chalk.yellow('Successfully'));
-    console.log();
-    // spinner.text = chalk.yellow('Image conversion completed!');
-    // spinner.succeed();
   }
 
   async generateSvgBundle(item) {
@@ -484,6 +479,10 @@ export default class Context {
     const { isTurn, outputPath, publicDir } = this.config;
     const { mode, cache } = this.config.options;
 
+    if (!this.files.length && !hasImageFiles(this.config.publicDir)) {
+      return false;
+    }
+
     const defaultSquooshOptions = {};
     Object.keys(defaultOptions).forEach(
       (key) => (defaultSquooshOptions[key] = { ...this.mergeConfig[key] }),
@@ -523,7 +522,7 @@ export default class Context {
     await initSvg({ ...initOptions, longest });
 
     if (mode === 'squoosh' && SquooshUseFlag) {
-      await initSquoosh({ ...initOptions, defaultSquooshOptions });
+      return initSquoosh({ ...initOptions, defaultSquooshOptions });
     } else if (mode === 'sharp' || !SquooshUseFlag) {
       if (mode === 'squoosh') {
         logger(
@@ -534,7 +533,7 @@ export default class Context {
         );
       }
 
-      await initSharp({ ...initOptions, longest });
+      return initSharp({ ...initOptions, longest });
     } else {
       throw new Error(
         '[vite-plugin-resize-image] Only squoosh or sharp can be selected for mode option',
