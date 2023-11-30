@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-resize-image",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "📦 📦 unplugin compression Image Compression plugin based on squoosh and sharp",
   "scripts": {
     "build": "tsup && npm run build:fix",
