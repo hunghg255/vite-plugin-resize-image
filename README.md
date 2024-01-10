@@ -1,8 +1,21 @@
-# 📦 vite-plugin-resize-image
+<p align="center">
+<a href="https://www.npmjs.com/package/vite-plugin-resize-image" target="_blank" rel="noopener noreferrer">
+<img src="https://api.iconify.design/bi:plugin.svg?color=%23a985ff" alt="logo" width='100'/></a>
+</p>
 
-[![NPM version](https://img.shields.io/npm/v/vite-plugin-resize-image?color=a1b858&label=)](https://www.npmjs.com/package/vite-plugin-resize-image)
+<p align="center">
+  A plugin resize image for <a href="https://vitejs.dev/" target="_blank" rel="noopener noreferrer">Vitejs</a>
+</p>
 
-### ✨✨ Continuous iterative development in testing
+<p align="center">
+  <a href="https://www.npmjs.com/package/vite-plugin-resize-image" target="_blank" rel="noopener noreferrer"><img src="https://badge.fury.io/js/vite-plugin-resize-image.svg" alt="NPM Version" /></a>
+  <a href="https://www.npmjs.com/package/vite-plugin-resize-image" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/npm/dt/vite-plugin-resize-image.svg?logo=npm" alt="NPM Downloads" /></a>
+  <a href="https://bundlephobia.com/result?p=vite-plugin-resize-image" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/bundlephobia/minzip/vite-plugin-resize-image" alt="Minizip" /></a>
+  <a href="https://github.com/hunghg255/vite-plugin-resize-image/graphs/contributors" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/all_contributors-1-orange.svg" alt="Contributors" /></a>
+  <a href="https://github.com/hunghg255/vite-plugin-resize-image/blob/main/LICENSE" target="_blank" rel="noopener noreferrer"><img src="https://badgen.net/github/license/hunghg255/vite-plugin-resize-image" alt="License" /></a>
+</p>
+
+## ✨✨ Continuous iterative development in testing
 
 ```bash
 [vite-plugin-resize-image] 📦 Process start with Mode sharp
@@ -13,7 +26,7 @@
 [vite-plugin-resize-image] ✨ Successfully
 ```
 
-#### 🌈 Features
+## 🌈 Features
 
 - 🍰 Support png jpeg webp avif svg tiff Format
 - 🦾 High Performance based on squoosh
@@ -49,7 +62,7 @@ It is recommended that mode choose `sharp`.
 npm i vite-plugin-resize-image@latest -D
 ```
 
-#### support vite and rollup.
+## support vite and rollup.
 
 <details>
 <summary>Basic</summary><br>
