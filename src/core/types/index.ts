@@ -1,24 +1,30 @@
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Options {}
 
+type CompressOptions = {
+  quality: number;
+};
+
 export interface CompressTypeOptions {
-  mozjpeg?: any;
-  jpeg?: any;
-  webp?: any;
-  avif?: any;
-  jxl?: any;
-  wp2?: any;
-  oxipng?: any;
-  png?: any;
-  git?: any;
-  svg?: any;
-  tiff?: any;
+  mozjpeg?: CompressOptions;
+  jpeg?: CompressOptions;
+  jpg?: CompressOptions;
+  webp?: CompressOptions;
+  avif?: CompressOptions;
+  jxl?: CompressOptions;
+  wp2?: CompressOptions;
+  oxipng?: CompressOptions;
+  png?: CompressOptions;
+  git?: CompressOptions;
+  svg?: CompressOptions;
+  tiff?: CompressOptions;
 }
 
 interface ConversionItemType {
-  from: string;
-  to: string;
+  from: keyof CompressTypeOptions;
+  to: keyof CompressTypeOptions;
 }
+
 export interface PluginOptions {
   /**
    * @description Picture compilation and conversion

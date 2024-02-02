@@ -6,10 +6,10 @@ import Context from './core/context';
 // squoosh navigator error
 delete globalThis.navigator;
 
-const unpluginFactory = (options: PluginOptions = {}): any => {
+const unpluginFactory = (options?: PluginOptions): any => {
   const ctx = new Context();
   // eslint-disable-next-line prefer-object-spread
-  const assignOptions = Object.assign({}, resolveDefaultOptions, options);
+  const assignOptions = Object.assign({}, resolveDefaultOptions, options ?? {});
 
   return {
     name: 'vite-plugin-resize-image',
